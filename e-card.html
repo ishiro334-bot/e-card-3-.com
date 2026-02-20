@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Card</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<section id="cardContainer">
+
+    <article id="questionCard">
+        <h2>IPAPASA KAYA AKO NI MA'AM?</h2>
+        <button class="btn" id="yesBtn"><b>YES</b></button>
+        <button class="btn" id="noBtn"><b>NO</b></button>
+    </article>
+
+    <article id="envelopeContainer" style="display:none;">
+        <h2>CLICK THE ENVELOPE!!</h2>
+        <img id="newEnvelope" src="/BSIT/img/envelope.jpg" alt="Envelope">
+    </article>
+
+    <article id="mainCard">
+        <div class="ribbon">APPRECIATION NOTE</div>
+        <h1>Dear Ma'am,</h1>
+        <hr>
+
+        <div class="text-container">
+            <p>I just want to take a moment to say thank you from the bottom of my heart. Your patience, guidance, and dedication have truly made a difference in my learning journey.</p>
+
+            <p>Thank you for correcting us not to belittle us, but to help us grow. Thank you for treating us not just as students, but as future professionals and individuals with potential.</p>
+
+            <p>The odds of having you as our professor may be 1 in 100, but I believe we met you for a reason; to guide us, teach us, and correct us when needed. Thank you for building a meaningful connection with us. Your passion and care have truly left a mark in our hearts.</p>
+
+            <p>To be honest, last year I struggled a lot with IT-WS01, but because of you, along with my progress and experience, everything became more bearable and achievable. This is not a joke your teaching, time, and dedication mean so much to us. I've appreciated everything you've done. Thank you for this meaningful experience, we love you.</p>
+
+            <p>With sincere appreciation,<br>Arnold.</p>
+        </div>
+
+        <button id="cycleColorBtn"><b><i>Change Color-Theme</i></b></button>
+    </article>
+</section>
+</main>
+
+<img id="sadImg" src="">
+<audio id="yesAudio" src="/BSIT/audio/yesAudio.mp3" loop></audio>
+<audio id="bgMusic" src="/BSIT/audio/backgroundMusic.mp3" loop></audio>
+
+<script>
+const noBtn = document.getElementById("noBtn"),
+      yesBtn = document.getElementById("yesBtn"),
+      sadImg = document.getElementById("sadImg"),
+      questionCard = document.getElementById("questionCard"),
+      envelopeContainer = document.getElementById("envelopeContainer"),
+      newEnvelope = document.getElementById("newEnvelope"),
+      mainCard = document.getElementById("mainCard"),
+      cycleBtn = document.getElementById("cycleColorBtn");
+
+const yesAudio = document.getElementById("yesAudio"),
+      bgMusic = document.getElementById("bgMusic");
+
+const sadImages = [
+    "/BSIT/img/sad1.jpg","/BSIT/img/sad2.jpg","/BSIT/img/sad3.jpg",
+    "/BSIT/img/sad4.jpg","/BSIT/img/sad5.jpg","/BSIT/img/sad6.jpg",
+    "/BSIT/img/sad7.jpg","/BSIT/img/sad8.jpg"
+];
+let sadIndex = 0;
+
+noBtn.addEventListener("click", ()=>{
+    sadImg.style.display="block";
+    sadImg.src=sadImages[sadIndex];
+    sadIndex = (sadIndex+1)%sadImages.length;
+    let x = Math.random()*200-100;
+    let y = Math.random()*200-100;
+    noBtn.style.transform = `translate(${x}px,${y}px)`;
+});
+
+yesBtn.addEventListener("click", ()=>{
+    sadImg.style.display="none";
+    questionCard.style.display="none";
+    envelopeContainer.style.display="block";
+    yesAudio.currentTime=0; yesAudio.play();
+});
+
+// Add butterflies floating in front of the card
+function addFloatingEmojisFront(parent, count=5){
+    const rect = parent.getBoundingClientRect(); // get card position
+    for(let i=0;i<count;i++){
+        const emoji = document.createElement("div");
+        emoji.className = "heart";
+        emoji.textContent = "🦋";
+        emoji.style.position = "fixed";
+        emoji.style.left = `${rect.left + 20 + i*50}px`;
+        emoji.style.top = `${rect.top - 20 - Math.random()*30}px`;
+        emoji.style.fontSize = `${25 + Math.random()*10}px`;
+        emoji.style.zIndex = 9999;
+        emoji.style.pointerEvents = "none";
+        document.body.appendChild(emoji);
+        setTimeout(()=>emoji.remove(), 3000);
+    }
+}
+
+newEnvelope.addEventListener("click", ()=>{
+    envelopeContainer.style.display="none";
+    mainCard.style.display="block";
+
+    yesAudio.pause(); yesAudio.currentTime=0;
+    bgMusic.currentTime=0; bgMusic.play();
+
+    const paragraphs = mainCard.querySelectorAll(".text-container p");
+    function typeParagraph(p, callback){
+        const fullText = p.textContent.trim();
+        p.textContent = ""; p.style.opacity="1";
+        let index=0;
+        const interval = setInterval(()=>{
+            p.textContent += fullText[index++];
+            if(mainCard.scrollHeight>mainCard.clientHeight){
+                mainCard.style.height=mainCard.scrollHeight+"px";
+                cycleBtn.style.bottom="15px";
+            }
+            if(index>=fullText.length){ clearInterval(interval); if(callback) callback();}
+        }, 20);
+    }
+    typeParagraph(paragraphs[0], ()=>{
+        typeParagraph(paragraphs[1], ()=>{
+            typeParagraph(paragraphs[2], ()=>{
+                typeParagraph(paragraphs[3], ()=>{
+                    typeParagraph(paragraphs[4]);
+                });
+            });
+        });
+    });
+
+    addFloatingEmojisFront(mainCard); // initial butterflies on top front
+});
+
+const colorSchemes = [
+    {bg:"#d0f0fd", card:"linear-gradient(135deg, #d0f0fd, #ffffff, #e0f7ff)"},
+    {bg:"#e6f7f1", card:"linear-gradient(135deg, #d4f7ea, #e0fff9, #ffffff)"},
+    {bg:"#f0f5ff", card:"linear-gradient(135deg, #dbe9ff, #e6f2ff, #ffffff)"},
+    {bg:"#fffde6", card:"linear-gradient(135deg, #fff8cc, #fffde0, #ffffff)"},
+    {bg:"#e6fff0", card:"linear-gradient(135deg, #c8ffe5, #e6fff5, #ffffff)"},
+    {bg:"#fff0f7", card:"linear-gradient(135deg, #ffe0f7, #fff0f7, #ffffff)"},
+    {bg:"#f9fff0", card:"linear-gradient(135deg, #e6ffd4, #f0fff5, #ffffff)"}
+];
+let currentColor = 0;
+
+cycleBtn.addEventListener("click", ()=>{
+    currentColor = (currentColor + 1) % colorSchemes.length;
+    const scheme = colorSchemes[currentColor];
+    document.body.style.background = scheme.bg;
+    mainCard.style.background = scheme.card;
+    addFloatingEmojisFront(mainCard, 5); // 5 butterflies floating in front
+});
+</script>
+</body>
+</html>
